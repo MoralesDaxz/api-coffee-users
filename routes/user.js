@@ -1,63 +1,50 @@
 import express from "express";
 import dotenv from "dotenv";
 import { MongoClient } from "mongodb";
+
 dotenv.config();
 const router = express.Router();
-
 const URI = process.env.MONGODB_URI;
 
+/* Obteniendo usuarios */
 router.get("/", async (req, res) => {
-  const client = new MongoClient(URI);
+  const client = new MongoClient(URI, { useNewUrlParser: true, useUnifiedTopology: true });
   try {
     await client.connect();
     const database = client.db("aroma");
     const collection = database.collection("user");
     const users = await collection.find({}).toArray();
-    console.log("Users fetched:", users);
-    return res.json(users);
+    /* console.log("Users fetched:", users); */
+    res.status(200).json(users);
   } catch (err) {
     res.status(500).json({ message: "Internal Server Error" });
   } finally {
     await client.close();
   }
 });
-/* 
-router.post("/", async (req, res) => {
-  const client = new MongoClient(uri);
-  try {
-    await client.connect();
-    const database = client.db("aroma");
-    const collection = database.collection("user");
-    const users = await collection.find({}).toArray();
-    console.log("Users fetched:", users);
-    return res.json(users);
-  } catch (err) {
-    res.status(500).json({ message: "Internal Server Error" });
-  } finally {
-    await client.close();
-  }
-}); */
-
 
 // Ruta POST: Agregar un nuevo usuario
-router.post('/', async (req, res) => {
+router.post("/", async (req, res) => {
   const client = new MongoClient(URI);
-
-  try {
+    try {
     await client.connect();
     const database = client.db("aroma");
     const collection = database.collection("user");
-
     const newUser = {
-      ...req.body,           // Incluye todos los datos enviados en el cuerpo de la solicitud
+      ...req.body, // Incluye todos los datos enviados en el cuerpo de la solicitud
       createdAt: new Date(), // Agrega el campo createdAt con la fecha y hora actual
     };
 
     const result = await collection.insertOne(newUser);
     console.log("User inserted:", result.insertedId);
-    res.status(201).json({ message: "User created successfully", userId: result.insertedId });
+    res
+      .status(201)
+      .json({
+        message: "User created successfully",
+        userId: result.insertedId,
+      });
   } catch (err) {
-    console.error('Error inserting user:', err);
+    console.error("Error inserting user:", err);
     res.status(500).json({ message: "Internal Server Error" });
   } finally {
     await client.close();
@@ -65,3 +52,20 @@ router.post('/', async (req, res) => {
 });
 
 export default router;
+
+    /* 
+    router.post("/", async (req, res) => {
+      const client = new MongoClient(uri);
+      try {
+        await client.connect();
+        const database = client.db("aroma");
+        const collection = database.collection("user");
+        const users = await collection.find({}).toArray();
+        console.log("Users fetched:", users);
+        return res.json(users);
+      } catch (err) {
+        res.status(500).json({ message: "Internal Server Error" });
+      } finally {
+        await client.close();
+      }
+    }); */

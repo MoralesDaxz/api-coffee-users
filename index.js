@@ -7,11 +7,17 @@ dotenv.config();  // Asegúrate de que dotenv se cargue lo antes posible
 const PORT = process.env.PORT || 5000;
 const app = express();
 // Middleware
-app.use(express.json());
-app.use(cors());
+app.use(cors()); // Middleware para habilitar CORS si es necesario
+app.use(express.json()); // Middleware para manejar datos JSON
 
 // Routes
-app.use('/api/users', userRoutes);
+// Ruta de bienvenida
+app.get('/', (req, res) => {
+    res.send("Welcome to the API!");
+  });
+  
+  // Rutas para usuarios, prefijo /users
+  app.use('/users', userRoutes); 
 
 // Start the server
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
