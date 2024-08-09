@@ -8,7 +8,7 @@ const URI = process.env.MONGODB_URI;
 
 /* Obteniendo usuarios */
 router.get("/", async (req, res) => {
-  const client = new MongoClient(URI, { useNewUrlParser: true, useUnifiedTopology: true });
+  const client = new MongoClient(URI);
   try {
     await client.connect();
     const database = client.db("aroma");
@@ -24,7 +24,7 @@ router.get("/", async (req, res) => {
 });
 
 // Ruta POST: Agregar un nuevo usuario
-router.post("/", async (req, res) => {
+router.post("/new", async (req, res) => {
   const client = new MongoClient(URI);
     try {
     await client.connect();
