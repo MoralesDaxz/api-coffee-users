@@ -15,18 +15,18 @@ router.get("/", async (req, res) => {
     const collection = database.collection("user");
     const users = await collection.find({}).toArray();
     /* console.log("Users fetched:", users); */
-    res.status(200).json(users);
+    return res.status(200).json(users);
   } catch (err) {
-    res.status(500).json({ message: "Internal Server Error" });
+    return res.status(500).json({ message: "Internal Server Error" });
   } finally {
-    await client.close();
+    return await client.close();
   }
 });
 
 // Ruta POST: Agregar un nuevo usuario
 router.post("/new", async (req, res) => {
   const client = new MongoClient(URI);
-    try {
+  try {
     await client.connect();
     const database = client.db("aroma");
     const collection = database.collection("user");
@@ -37,12 +37,10 @@ router.post("/new", async (req, res) => {
 
     const result = await collection.insertOne(newUser);
     console.log("User inserted:", result.insertedId);
-    res
-      .status(201)
-      .json({
-        message: "User created successfully",
-        userId: result.insertedId,
-      });
+    res.status(201).json({
+      message: "User created successfully",
+      userId: result.insertedId,
+    });
   } catch (err) {
     console.error("Error inserting user:", err);
     res.status(500).json({ message: "Internal Server Error" });
@@ -53,7 +51,7 @@ router.post("/new", async (req, res) => {
 
 export default router;
 
-    /* 
+/* 
     router.post("/", async (req, res) => {
       const client = new MongoClient(uri);
       try {
