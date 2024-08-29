@@ -30,17 +30,24 @@ router.post("/new", async (req, res) => {
     await client.connect();
     const database = client.db("aroma");
     const collection = database.collection("user");
-    const newUser = {
-      ...req.body, // Incluye todos los datos enviados en el cuerpo de la solicitud
-      createdAt: new Date(), // Agrega el campo createdAt con la fecha y hora actual
-    };
+    // Verificar si el correo electrónico ya está registrado
 
-    const result = await collection.insertOne(newUser);
-    console.log("User inserted:", result.insertedId);
-    res.status(201).json({
-      message: "User created successfully",
-      userId: result.insertedId,
-    });
+    const existingUser = await collection.findOne({ email: req.body.email });
+
+    if (!existingUser) {
+      // Crear el nuevo usuario
+      const newUser = {
+        ...req.body,
+        createdAt: new Date(),
+      };
+      const result = await collection.insertOne(newUser);
+      console.log("User inserted:", result.insertedId);
+      res.status(201).json({
+        message: "User created successfully",
+        userId: result.insertedId,
+      });
+    }
+    return res.status(400).json({ message: "Email already registered" });
   } catch (err) {
     console.error("Error inserting user:", err);
     res.status(500).json({ message: "Internal Server Error" });
