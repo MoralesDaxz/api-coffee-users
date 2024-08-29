@@ -22,7 +22,6 @@ router.get("/", async (req, res) => {
     return await client.close();
   }
 });
-
 // Ruta POST: Agregar un nuevo usuario
 router.post("/new", async (req, res) => {
   const client = new MongoClient(URI);
@@ -31,9 +30,7 @@ router.post("/new", async (req, res) => {
     const database = client.db("aroma");
     const collection = database.collection("user");
     // Verificar si el correo electrónico ya está registrado
-
     const existingUser = await collection.findOne({ email: req.body.email });
-
     if (!existingUser) {
       // Crear el nuevo usuario
       const newUser = {
@@ -42,12 +39,13 @@ router.post("/new", async (req, res) => {
       };
       const result = await collection.insertOne(newUser);
       console.log("User inserted:", result.insertedId);
-      res.status(201).json({
+     return res.status(201).json({
+        status:"ok",
         message: "User created successfully",
         userId: result.insertedId,
       });
     }
-    return res.status(400).json({ message: "Email already registered" });
+    return res.status(400).json({ status: "fail", message: "Email already registered" });
   } catch (err) {
     console.error("Error inserting user:", err);
     res.status(500).json({ message: "Internal Server Error" });
