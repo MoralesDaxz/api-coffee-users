@@ -19,7 +19,7 @@ app.use(express.json()); // Middleware para manejar datos JSON
 
 // Ruta de bienvenida
 app.get("/", (req, res) => {
-  res.send("Welcome to the API!");
+  res.send("Users - Welcome");
 });
 
 // Rutas para usuarios, prefijo /users
